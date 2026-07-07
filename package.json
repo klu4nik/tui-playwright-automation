@@ -1,0 +1,20 @@
+{
+  "name": "tui-playwright-automation",
+  "version": "1.0.0",
+  "description": "Playwright automation suite for TUI.nl holiday booking journey",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:booking": "playwright test tests/booking-journey.spec.ts",
+    "test:validation": "playwright test tests/passenger-validation.spec.ts",
+    "report": "playwright show-report",
+    "codegen": "playwright codegen https://www.tui.nl/h/nl"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.12.0",
+    "typescript": "^5.4.0"
+  }
+}
