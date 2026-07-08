@@ -19,7 +19,7 @@ export class HomePage {
 
   constructor(private readonly page: Page) {
     this.cookieBanner = new CookieBanner(page);
-    this.searchPanel  = new SearchPanel(page);
+    this.searchPanel = new SearchPanel(page);
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────
@@ -51,11 +51,16 @@ export class HomePage {
   }
 
   async selectDepartureDate(): Promise<string> {
-    return this.searchPanel.selectDepartureDate();
+    return this.searchPanel.selectRandomDepartureDate();
   }
 
-  async configureRoomsAndGuests(targetAdults: number = 2): Promise<{ adults: number; childAge: string }> {
-    return this.searchPanel.configureRoomsAndGuests(targetAdults);
+  async configureRoomsAndGuests(
+    targetRooms: 'default' | number = 'default',
+    targetAdults: number = 2,
+    targetChild: number = 0,
+    childrenAges: number[] = [],
+  ): Promise<{ rooms: number | 'default'; adults: number; childAges: string[] }> {
+    return this.searchPanel.configureRoomsAndGuests(targetRooms, targetAdults, targetChild, childrenAges);
   }
 
   async clickSearch(): Promise<void> {

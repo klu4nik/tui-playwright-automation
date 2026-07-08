@@ -45,8 +45,8 @@ test.describe('TUI.nl Holiday Booking Journey', () => {
     // Step 5 – Select an available departure date
     const departureDate = await homePage.selectDepartureDate();
 
-    // Step 6 – Set Rooms & Guests: 2 adults + 1 child
-    const { childAge } = await homePage.configureRoomsAndGuests(2);
+    // Step 6 – Set Rooms & Guests: 2 adults + 1 child (random age)
+    const { childAges } = await homePage.configureRoomsAndGuests('default', 2, 1);
 
     // Step 7 – Submit the search
     await homePage.clickSearch();
@@ -71,7 +71,7 @@ test.describe('TUI.nl Holiday Booking Journey', () => {
     console.log(`   Departure:   ${departureAirport}`);
     console.log(`   Destination: ${destination}`);
     console.log(`   Date:        ${departureDate}`);
-    console.log(`   Guests:      2 adults + 1 child (age ${childAge})`);
+    console.log(`   Guests:      2 adults + 1 child (age ${childAges[0]})`);
     console.log(`   Hotel:       ${hotelName}`);
   });
 });
