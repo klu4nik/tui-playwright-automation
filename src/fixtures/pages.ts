@@ -15,7 +15,6 @@ import { HotelDetailsPage } from '@pages/HotelDetailsPage';
  */
 type PageFixtures = {
   homePage: HomePage;
-  searchResultsPage: SearchResultsPage;
   hotelListPage: HotelListPage;
   hotelDetailsPage : HotelDetailsPage;
   flightSelectionPage: FlightSelectionPage;
@@ -25,9 +24,6 @@ type PageFixtures = {
 export const test = base.extend<PageFixtures>({
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
-  },
-  searchResultsPage: async ({ page }, use) => {
-    await use(new SearchResultsPage(page));
   },
   hotelListPage: async ({ page }, use) => {
     await use(new HotelListPage(page));
