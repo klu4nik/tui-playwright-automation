@@ -82,16 +82,16 @@ export class PassengerDetailsPage {
         this.dateOfBirthMMInput = page.locator('.DateInput__field input[aria-label="month"]');
         this.dateOfBirthYYYYInput = page.locator('.DateInput__field input[aria-label="year"]');
 
-        this.nationalityAdultSelect = page.locator('select[id^="NATIONALITYADULT"], input[id^="NATIONALITYADULT"]');
+        this.nationalityAdultSelect = page.locator('select[id^="NATIONALITYADULT"]');
 
-        this.landAdultDropdown = page.locator('select[id^="COUNTRYADULT"], input[id^="COUNTRYADULT"]');
+        this.landAdultDropdown = page.locator('select[id^="COUNTRYADULT"]');
 
         this.streetNameInput = page.locator('input[id^="STREETADULT"]');
 
         this.houseNumberInput = page.locator('input[id^="HOUSENUMBERADULT"]');
 
         this.postalCodeInput = page.locator('input[id^="POSTALCODEADULT"]');
-        this.cityAdultInput = page.locator('input[id^="CITYADULT"], input[aria-label="Woonplaats"]');
+        this.cityAdultInput = page.locator('input[id^="CITYADULT"]');
 
         this.mobileNumberIndexDropdown = page.locator('select[id^="MOBILENUMBERINDEXADULT"]');
 
