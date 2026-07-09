@@ -22,9 +22,9 @@
  * clean, flat sequence of POM calls.
  */
 
-import {test, expect} from '@fixtures/pages';
-import {generatePassengerData} from '@helpers/random';
-import {HomePage} from '@pages/HomePage';
+import { test, expect } from '@fixtures/pages';
+import { generatePassengerData } from '@helpers/random';
+import { HomePage } from '@pages/HomePage';
 
 /**
  * Returns the age (in years) of the first child configured during the search,
@@ -37,13 +37,7 @@ function childAgeFromSearch(homePage: HomePage): number {
 
 // ── Shared funnel (runs before each test) ─────────────────────────────────
 
-test.beforeEach(async ({
-                          homePage,
-                          hotelListPage,
-                          hotelDetailsPage,
-                          flightSelectionPage,
-                          passengerDetailsPage,
-                      }) => {
+test.beforeEach(async ({ homePage, hotelListPage, hotelDetailsPage, flightSelectionPage, passengerDetailsPage }) => {
     await homePage.goto();
     await homePage.acceptCookies();
     await homePage.selectRandomDepartureAirport();
@@ -69,16 +63,11 @@ test.beforeEach(async ({
 // ── Full journey ───────────────────────────────────────────────────────────
 
 test.describe('TUI.nl Holiday Booking Journey', () => {
-
-    test('Complete booking funnel from homepage to passenger details', async ({
-                                                                                   homePage,
-                                                                                   passengerDetailsPage,
-                                                                               }) => {
-
+    test('Complete booking funnel from homepage to passenger details', async ({ homePage, passengerDetailsPage }) => {
         // Step 12 – Fill valid passenger details (2 adults + 1 child) and continue
         const adult1 = generatePassengerData();
         const adult2 = generatePassengerData();
-        const child = generatePassengerData({isChild: true, childAge: childAgeFromSearch(homePage)});
+        const child = generatePassengerData({ isChild: true, childAge: childAgeFromSearch(homePage) });
         await passengerDetailsPage.fillAllTravellers(adult1, adult2, child);
         await passengerDetailsPage.clickContinue();
 
@@ -86,37 +75,44 @@ test.describe('TUI.nl Holiday Booking Journey', () => {
         await expect(passengerDetailsPage.mainErrorMessage).toBeHidden();
 
         console.log('\n📋 Journey summary:');
-        console.log(`   Passenger:   ${adult1.firstName} ${adult1.lastName} (+ ${adult2.firstName} ${adult2.lastName}, ${child.firstName} ${child.lastName})`);
+        console.log(
+            `   Passenger:   ${adult1.firstName} ${adult1.lastName} (+ ${adult2.firstName} ${adult2.lastName}, ${child.firstName} ${child.lastName})`,
+        );
     });
 });
 
 // ── Passenger Details – Positive scenarios ────────────────────────────────
 
 test.describe('Passenger Details – Positive scenarios', () => {
-
-    test('Valid passenger details produce no validation errors', async ({homePage, passengerDetailsPage}) => {
+    test('Valid passenger details produce no validation errors', async ({ homePage, passengerDetailsPage }) => {
         const adult1 = generatePassengerData();
         const adult2 = generatePassengerData();
-        const child = generatePassengerData({isChild: true, childAge: childAgeFromSearch(homePage)});
+        const child = generatePassengerData({ isChild: true, childAge: childAgeFromSearch(homePage) });
         await passengerDetailsPage.fillAllTravellers(adult1, adult2, child);
 
         // Trigger validation with a fully valid form
         await passengerDetailsPage.triggerValidation();
 
         const errors = await passengerDetailsPage.getVisibleErrorTexts();
-        expect(errors.length, `Expected no validation errors for valid data, but found: ${JSON.stringify(errors)}`).toBe(0);
+        expect(
+            errors.length,
+            `Expected no validation errors for valid data, but found: ${JSON.stringify(errors)}`,
+        ).toBe(0);
         console.log('✓ Valid passenger details (2 adults + 1 child) submitted without validation errors');
     });
 
-    test('Valid passenger details allow continuing to the next step', async ({homePage, passengerDetailsPage}) => {
+    test('Valid passenger details allow continuing to the next step', async ({ homePage, passengerDetailsPage }) => {
         const adult1 = generatePassengerData();
         const adult2 = generatePassengerData();
-        const child = generatePassengerData({isChild: true, childAge: childAgeFromSearch(homePage)});
+        const child = generatePassengerData({ isChild: true, childAge: childAgeFromSearch(homePage) });
         await passengerDetailsPage.fillAllTravellers(adult1, adult2, child);
         await passengerDetailsPage.clickContinue();
 
         // The main error banner must not be visible on the happy path
-        await expect(passengerDetailsPage.mainErrorMessage, 'Main error banner should stay hidden for valid data').toBeHidden();
+        await expect(
+            passengerDetailsPage.mainErrorMessage,
+            'Main error banner should stay hidden for valid data',
+        ).toBeHidden();
         console.log('✓ Valid passenger details (2 adults + 1 child) accepted and form continued');
     });
 });

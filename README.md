@@ -68,6 +68,17 @@ npx playwright test tests/booking-journey.spec.ts
 npx playwright test --trace on
 ```
 
+## Linting & Formatting
+
+The suite ships with ESLint (`@typescript-eslint`) and Prettier for consistent, dead-code-free code:
+
+```bash
+npm run lint          # Report lint + formatting issues
+npm run lint:fix      # Auto-fix lint/format issues
+npm run format        # Write Prettier formatting
+npm run format:check  # Verify formatting without writing
+```
+
 ## Viewing Test Reports
 
 After a test run:

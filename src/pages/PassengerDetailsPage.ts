@@ -1,5 +1,5 @@
-import {Page, Locator, expect, test} from '@playwright/test';
-import {INVALID_PASSENGER_DATA, PassengerData} from '@helpers/random';
+import { Page, Locator, expect, test } from '@playwright/test';
+import { INVALID_PASSENGER_DATA, PassengerData } from '@helpers/random';
 
 /**
  * PassengerDetailsPage – the form where travellers fill in their personal
@@ -12,7 +12,6 @@ export class PassengerDetailsPage {
     readonly page: Page;
 
     readonly pageHeading: Locator;
-    readonly loadingOverlay: Locator;
 
     // ── First passenger (adult 1) form fields ─────────────────────────────────
     readonly firstNameAdultInput: Locator;
@@ -58,22 +57,20 @@ export class PassengerDetailsPage {
     constructor(page: Page) {
         this.page = page;
 
-        this.loadingOverlay = page.locator(
-            '[class*="loading"], [class*="spinner"], [aria-busy="true"]'
-        );
-
-        this.pageHeading = page.locator(
-            '[data-testid="passenger-heading"], ' +
-            'h1:has-text("reiziger" i), ' +
-            'h1:has-text("passenger" i), ' +
-            'h1:has-text("gegevens" i), ' +
-            'h1, h2'
-        ).first();
+        this.pageHeading = page
+            .locator(
+                '[data-testid="passenger-heading"], ' +
+                    'h1:has-text("reiziger" i), ' +
+                    'h1:has-text("passenger" i), ' +
+                    'h1:has-text("gegevens" i), ' +
+                    'h1, h2',
+            )
+            .first();
 
         this.firstNameAdultInput = page.locator('input[id^="FIRSTNAMEADULT"]');
 
         this.lastNameAdultInput = page.locator('input[id^="SURNAMEADULT"]');
-        this.genderAdultSelect = page.locator('select[id^="GENDERADULT"]')
+        this.genderAdultSelect = page.locator('select[id^="GENDERADULT"]');
         this.firstNameKidInput = page.locator('input[id^="FIRSTNAMECHILD"]');
         this.lastNameKidInput = page.locator('input[id^="SURNAMECHILD"]');
         this.genderKidSelect = page.locator('select[id^="GENDERCHILD"]');
@@ -110,9 +107,7 @@ export class PassengerDetailsPage {
 
         // ── Error messages ─────────────────────────────────────────────────────
         this.mainErrorMessage = page.locator('.alerts__alertText');
-        this.allErrorFieldMessages = page.locator(
-            '.inputs__errorMessageWithIcon'
-        );
+        this.allErrorFieldMessages = page.locator('.inputs__errorMessageWithIcon');
 
         this.firstNameError = page.locator('[id^="FIRSTNAMEADULT"][id$="__errorMessage"]');
 
@@ -134,13 +129,12 @@ export class PassengerDetailsPage {
     async waitForPage(): Promise<void> {
         await test.step('Verify arrival on the Passenger Details page', async () => {
             await this.page.waitForLoadState('domcontentloaded');
-            await expect(this.page).toHaveURL(
-                /passengerdetails/i,
-                {timeout: 15_000}
-            ).catch(async () => {
-                console.warn('  ⚠ URL pattern not matched; checking form fields directly');
-                await expect(this.firstNameAdultInput).toBeVisible({timeout: 10_000});
-            });
+            await expect(this.page)
+                .toHaveURL(/passengerdetails/i)
+                .catch(async () => {
+                    console.warn('  ⚠ URL pattern not matched; checking form fields directly');
+                    await expect(this.firstNameAdultInput).toBeVisible();
+                });
 
             console.log('✓ Passenger details page confirmed');
         });
@@ -149,13 +143,13 @@ export class PassengerDetailsPage {
     // ── Form helpers ───────────────────────────────────────────────────────────
 
     async fillField(locator: Locator, value: string): Promise<void> {
-        await locator.waitFor({state: 'visible', timeout: 8_000});
+        await locator.waitFor({ state: 'visible' });
         await locator.clear();
         await locator.fill(value);
     }
 
     async clearField(locator: Locator): Promise<void> {
-        await locator.waitFor({state: 'visible', timeout: 8_000});
+        await locator.waitFor({ state: 'visible' });
         await locator.clear();
     }
 
@@ -185,20 +179,19 @@ export class PassengerDetailsPage {
      */
     async fillTravelerDetails(data: PassengerData): Promise<void> {
         await test.step(`Fill traveler details for ${data.firstName} ${data.lastName}`, async () => {
-
             // ── Text inputs – fill all in a single loop ───────────────────────
             const textFields: Array<{ label: string; locator: Locator; value: string }> = [
-                {label: 'first name', locator: this.firstNameAdultInput.first(), value: data.firstName},
-                {label: 'last name', locator: this.lastNameAdultInput.first(), value: data.lastName},
-                {label: 'email', locator: this.emailInput.first(), value: data.email},
-                {label: 'mobile number', locator: this.mobileNumberInput.first(), value: data.mobileNumber},
-                {label: 'street', locator: this.streetNameInput.first(), value: data.streetName},
-                {label: 'house number', locator: this.houseNumberInput.first(), value: data.houseNumber},
-                {label: 'postal code', locator: this.postalCodeInput.first(), value: data.postalCode},
-                {label: 'city', locator: this.cityAdultInput.first(), value: data.city},
+                { label: 'first name', locator: this.firstNameAdultInput.first(), value: data.firstName },
+                { label: 'last name', locator: this.lastNameAdultInput.first(), value: data.lastName },
+                { label: 'email', locator: this.emailInput.first(), value: data.email },
+                { label: 'mobile number', locator: this.mobileNumberInput.first(), value: data.mobileNumber },
+                { label: 'street', locator: this.streetNameInput.first(), value: data.streetName },
+                { label: 'house number', locator: this.houseNumberInput.first(), value: data.houseNumber },
+                { label: 'postal code', locator: this.postalCodeInput.first(), value: data.postalCode },
+                { label: 'city', locator: this.cityAdultInput.first(), value: data.city },
             ];
 
-            for (const {label, locator, value} of textFields) {
+            for (const { label, locator, value } of textFields) {
                 await test.step(`Fill ${label}`, async () => {
                     if (await locator.isVisible().catch(() => false)) {
                         await this.fillField(locator, value);
@@ -212,26 +205,50 @@ export class PassengerDetailsPage {
             });
 
             await test.step('Select nationality', async () => {
-                if (await this.nationalityAdultSelect.first().isVisible().catch(() => false)) {
-                    await this.nationalityAdultSelect.first().selectOption(data.nationality).catch(async () => {
-                        await this.fillField(this.nationalityAdultSelect.first(), data.nationality);
-                    });
+                if (
+                    await this.nationalityAdultSelect
+                        .first()
+                        .isVisible()
+                        .catch(() => false)
+                ) {
+                    await this.nationalityAdultSelect
+                        .first()
+                        .selectOption(data.nationality)
+                        .catch(async () => {
+                            await this.fillField(this.nationalityAdultSelect.first(), data.nationality);
+                        });
                 }
             });
 
             await test.step('Select country', async () => {
-                if (await this.landAdultDropdown.first().isVisible().catch(() => false)) {
-                    await this.landAdultDropdown.first().selectOption(data.country).catch(async () => {
-                        await this.fillField(this.landAdultDropdown.first(), data.country);
-                    });
+                if (
+                    await this.landAdultDropdown
+                        .first()
+                        .isVisible()
+                        .catch(() => false)
+                ) {
+                    await this.landAdultDropdown
+                        .first()
+                        .selectOption(data.country)
+                        .catch(async () => {
+                            await this.fillField(this.landAdultDropdown.first(), data.country);
+                        });
                 }
             });
 
             await test.step('Select mobile country code', async () => {
-                if (await this.mobileNumberIndexDropdown.first().isVisible().catch(() => false)) {
-                    await this.mobileNumberIndexDropdown.first().selectOption(data.mobileCountryCode).catch(async () => {
-                        await this.fillField(this.mobileNumberIndexDropdown.first(), data.mobileCountryCode);
-                    });
+                if (
+                    await this.mobileNumberIndexDropdown
+                        .first()
+                        .isVisible()
+                        .catch(() => false)
+                ) {
+                    await this.mobileNumberIndexDropdown
+                        .first()
+                        .selectOption(data.mobileCountryCode)
+                        .catch(async () => {
+                            await this.fillField(this.mobileNumberIndexDropdown.first(), data.mobileCountryCode);
+                        });
                 }
             });
 
@@ -239,11 +256,11 @@ export class PassengerDetailsPage {
             await test.step('Fill date of birth', async () => {
                 const [yyyy, mm, dd] = data.dateOfBirth.split('-');
                 const dobFields: Array<{ locator: Locator; value: string }> = [
-                    {locator: this.dateOfBirthDDInput, value: dd},
-                    {locator: this.dateOfBirthMMInput, value: mm},
-                    {locator: this.dateOfBirthYYYYInput, value: yyyy},
+                    { locator: this.dateOfBirthDDInput, value: dd },
+                    { locator: this.dateOfBirthMMInput, value: mm },
+                    { locator: this.dateOfBirthYYYYInput, value: yyyy },
                 ];
-                for (const {locator, value} of dobFields) {
+                for (const { locator, value } of dobFields) {
                     if (await locator.isVisible().catch(() => false)) {
                         await this.fillField(locator, value);
                     }
@@ -288,7 +305,12 @@ export class PassengerDetailsPage {
      */
     async fillChild(data: PassengerData): Promise<void> {
         await test.step(`Fill child: ${data.firstName} ${data.lastName}`, async () => {
-            if (!(await this.firstNameKidInput.first().isVisible().catch(() => false))) {
+            if (
+                !(await this.firstNameKidInput
+                    .first()
+                    .isVisible()
+                    .catch(() => false))
+            ) {
                 console.log('ℹ Child fields not visible – skipping');
                 return;
             }
@@ -318,7 +340,12 @@ export class PassengerDetailsPage {
      */
     async fillStayHomeContact(data: PassengerData): Promise<void> {
         await test.step('Fill stay-at-home emergency contact', async () => {
-            if (!(await this.stayHomeLastNameInput.first().isVisible().catch(() => false))) {
+            if (
+                !(await this.stayHomeLastNameInput
+                    .first()
+                    .isVisible()
+                    .catch(() => false))
+            ) {
                 console.log('ℹ Stay-at-home contact fields not visible – skipping');
                 return;
             }
@@ -368,7 +395,9 @@ export class PassengerDetailsPage {
             // The booking cannot proceed until the required terms & conditions
             // checkbox ("Ik ga akkoord met de algemene voorwaarden") is ticked.
             const termsCheckbox = this.page
-                .locator('xpath=//input[@type="checkbox" and ancestor::*[contains(., "Ik ga akkoord met de algemene voorwaarden")]]')
+                .locator(
+                    'xpath=//input[@type="checkbox" and ancestor::*[contains(., "Ik ga akkoord met de algemene voorwaarden")]]',
+                )
                 .first();
             if (await termsCheckbox.isVisible().catch(() => false)) {
                 await termsCheckbox.check({ force: true }).catch(() => {});
@@ -384,7 +413,7 @@ export class PassengerDetailsPage {
 
     async assertErrorsVisible(): Promise<void> {
         await test.step('Verify required-field error messages are displayed', async () => {
-            await expect(this.allErrorFieldMessages.first()).toBeVisible({timeout: 8_000});
+            await expect(this.allErrorFieldMessages.first()).toBeVisible();
             const errors = await this.getVisibleErrorTexts();
             expect(errors.length, 'At least one error message should be visible after empty submit').toBeGreaterThan(0);
             await expect(this.mainErrorMessage, 'Main validation error message should be visible').toBeVisible();
@@ -404,14 +433,14 @@ export class PassengerDetailsPage {
      */
     async assertMainErrorMessageErrorCount(): Promise<void> {
         await test.step('Verify main error message reports the correct number of failed checks', async () => {
-            await expect(this.mainErrorMessage, 'Main validation error message should be visible').toBeVisible({timeout: 8_000});
+            await expect(this.mainErrorMessage, 'Main validation error message should be visible').toBeVisible();
 
-            const mainText = (await this.mainErrorMessage.textContent() ?? '').trim();
+            const mainText = ((await this.mainErrorMessage.textContent()) ?? '').trim();
             expect(mainText, 'Main error message text is empty').not.toBe('');
 
             const match = mainText.match(/\d+/);
             expect(match, `Could not find an error count in main message: "${mainText}"`).not.toBeNull();
-            const reportedCount = Number(match![0]);
+            const reportedCount = match ? Number(match[0]) : 0;
 
             const fieldErrors = await this.getVisibleErrorTexts();
             const actualCount = fieldErrors.length;
@@ -424,7 +453,7 @@ export class PassengerDetailsPage {
 
             expect(
                 reportedCount,
-                `Main message reports ${reportedCount} failed check(s) but ${actualCount} field error message(s) are visible: ${JSON.stringify(fieldErrors)}`
+                `Main message reports ${reportedCount} failed check(s) but ${actualCount} field error message(s) are visible: ${JSON.stringify(fieldErrors)}`,
             ).toBe(actualCount);
 
             console.log(`✓ Counts match: ${reportedCount} reported == ${actualCount} shown`);
@@ -436,7 +465,7 @@ export class PassengerDetailsPage {
         const texts: string[] = [];
         for (const el of errors) {
             if (await el.isVisible()) {
-                const text = (await el.textContent() ?? '').trim();
+                const text = ((await el.textContent()) ?? '').trim();
                 if (text) texts.push(text);
             }
         }
@@ -445,11 +474,11 @@ export class PassengerDetailsPage {
 
     async assertFieldError(fieldLocator: Locator, expectedText?: string): Promise<void> {
         const siblingError = fieldLocator.locator(
-            'xpath=following-sibling::*[contains(@class,"error") or @role="alert"][1]'
+            'xpath=following-sibling::*[contains(@class,"error") or @role="alert"][1]',
         );
         const parentError = fieldLocator.locator(
             'xpath=parent::*[contains(@class,"field") or contains(@class,"form-group")]' +
-            '//*[contains(@class,"error") or @role="alert"]'
+                '//*[contains(@class,"error") or @role="alert"]',
         );
 
         let errorEl: Locator | null = null;
@@ -463,10 +492,10 @@ export class PassengerDetailsPage {
         if (errorEl) {
             await expect(errorEl).toBeVisible();
             if (expectedText) {
-                await expect(errorEl).toContainText(expectedText, {ignoreCase: true});
+                await expect(errorEl).toContainText(expectedText, { ignoreCase: true });
             }
         } else {
-            await expect(this.allErrorFieldMessages.first()).toBeVisible({timeout: 8_000});
+            await expect(this.allErrorFieldMessages.first()).toBeVisible();
         }
     }
 
@@ -583,7 +612,7 @@ export class PassengerDetailsPage {
             const errors = await this.getVisibleErrorTexts();
             expect(
                 errors.length,
-                `Expected multiple errors when all fields are blank, but got: ${JSON.stringify(errors)}`
+                `Expected multiple errors when all fields are blank, but got: ${JSON.stringify(errors)}`,
             ).toBeGreaterThan(1);
             console.log(`✓ ${errors.length} errors shown for blank form:`);
             errors.forEach((e, i) => console.log(`   [${i + 1}] ${e}`));

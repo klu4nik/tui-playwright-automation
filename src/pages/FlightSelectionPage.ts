@@ -1,5 +1,5 @@
-import {Page, Locator, expect, test} from '@playwright/test';
-import {pickRandom} from '@helpers/random';
+import { Page, Locator, expect, test } from '@playwright/test';
+import { pickRandom } from '@helpers/random';
 
 /**
  * FlightSelectionPage – step where the user picks outbound (and optionally
@@ -11,32 +11,22 @@ export class FlightSelectionPage {
     readonly openAlternativeFlightsButton: Locator;
     readonly selectAlternativeFlightButton: Locator;
     readonly continueBtn: Locator;
-    readonly loadingOverlay: Locator;
 
     constructor(page: Page) {
         this.page = page;
 
-        this.loadingOverlay = page.locator(
-            '[class*="loading"], [class*="spinner"], [aria-busy="true"]'
-        );
-
-
         this.openAlternativeFlightsButton = page.locator('.YourFlights__showHideAltFlightsLink a');
         this.selectAlternativeFlightButton = page.locator('.AlternativeFlights__selectButtonWrapper button');
 
-
         this.continueBtn = page.locator('.ProgressbarNavigation__summaryButton button');
     }
-
 
     // ── Step-wrapped public API ────────────────────────────────────────────────
 
     async waitForPage(): Promise<void> {
         await test.step('Wait for flight selection page to load', async () => {
             await this.page.waitForLoadState('domcontentloaded');
-            await expect(this.page).toHaveURL(/book\/flow\/summary/i, {timeout: 20_000});
-            await this.loadingOverlay.waitFor({state: 'hidden', timeout: 30_000}).catch(() => {
-            });
+            await expect(this.page).toHaveURL(/book\/flow\/summary/i);
             console.log(`✓ Flight selection page loaded: ${this.page.url()}`);
         });
     }
@@ -48,7 +38,10 @@ export class FlightSelectionPage {
         await test.step('Open alternative flights panel', async () => {
             await expect(this.openAlternativeFlightsButton.first()).toBeVisible();
             await this.openAlternativeFlightsButton.first().click();
-            const hasAlternatives = await this.selectAlternativeFlightButton.first().isVisible().catch(() => false);
+            const hasAlternatives = await this.selectAlternativeFlightButton
+                .first()
+                .isVisible()
+                .catch(() => false);
             if (hasAlternatives) {
                 console.log('✓ Alternative flights panel opened');
             } else {
@@ -71,14 +64,13 @@ export class FlightSelectionPage {
         });
     }
 
-
     async clickContinue(): Promise<void> {
         await test.step('Continue from flight selection', async () => {
             await this.continueBtn.first().scrollIntoViewIfNeeded();
             await expect(this.continueBtn.first()).toBeVisible();
             await this.continueBtn.first().click();
             await this.page.waitForLoadState('domcontentloaded');
-            await expect(this.page).toHaveURL(/book\/flow\/summary/i, {timeout: 20_000});
+            await expect(this.page).toHaveURL(/book\/flow\/summary/i);
             console.log(`✓ Navigated to summary: ${this.page.url()}`);
         });
     }

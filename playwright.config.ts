@@ -13,14 +13,14 @@ export default defineConfig({
 
   use: {
     baseURL: 'https://www.tui.nl',
-    headless: false,
+    headless: true,
     viewport: { width: 1440, height: 900 },
     locale: 'nl-NL',
     timezoneId: 'Europe/Amsterdam',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
-    actionTimeout: 15_000,
+    actionTimeout: 20_000,
     navigationTimeout: 30_000,
   },
 
@@ -36,6 +36,6 @@ export default defineConfig({
   // Global timeout per test (10 minutes — the booking funnel can be slow)
   timeout: 600_000,
   expect: {
-    timeout: 10_000,
+    timeout: 20_000,
   },
 });

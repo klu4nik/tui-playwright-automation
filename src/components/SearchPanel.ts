@@ -1,5 +1,5 @@
-import {Page, Locator, expect, test} from '@playwright/test';
-import {pickRandom} from '@helpers/random';
+import { Page, Locator, expect, test } from '@playwright/test';
+import { pickRandom } from '@helpers/random';
 
 /**
  * SearchPanel – the holiday search widget on the TUI.nl homepage.
@@ -49,20 +49,27 @@ export class SearchPanel {
         // ── Fields ───────────────────────────────────────────────────────────────
         this.departureAirportField = page.locator('[data-test-id="airport-input"]');
         this.destinationField = page.locator('[data-test-id="destination-input"]');
-        this.destinationAirportSelectionButton = page.locator('//input[@data-test-id="destination-input"]/..//span/span/span');
+        this.destinationAirportSelectionButton = page.locator(
+            '//input[@data-test-id="destination-input"]/..//span/span/span',
+        );
         this.departureDateField = page.locator('[data-test-id="departure-date-input"]');
         this.roomsGuestsField = page.locator('[data-test-id="rooms-and-guest-input"]');
         this.searchBtn = page.locator('[data-test-id="search-button"]');
         // ── Departure airport dropdown ───────────────────────────────────────────
         this.departureAirportOptions = page.locator('div.SelectAirports__groupcontainer .inputs__checkIcon');
-        this.departureActiveAirportOptions = page.locator('div.SelectAirports__groupcontainer label:has(input[type=checkbox]:not([disabled]))');
+        this.departureActiveAirportOptions = page.locator(
+            'div.SelectAirports__groupcontainer label:has(input[type=checkbox]:not([disabled]))',
+        );
 
         // ── Destination dropdown ─────────────────────────────────────────────────
-        this.destinationCountryOptions = page.locator('ul.DestinationsList__destinationListStyle > li'
+        this.destinationCountryOptions = page.locator('ul.DestinationsList__destinationListStyle > li');
+        this.destinationCountrySelectableOptions = page.locator(
+            'ul.DestinationsList__destinationListStyle > li > a:not(.DestinationsList__disabled)',
         );
-        this.destinationCountrySelectableOptions = page.locator('ul.DestinationsList__destinationListStyle > li > a:not(.DestinationsList__disabled)');
         this.destinationAirportOptions = page.locator('div.DestinationsList__droplistContainer .inputs__checkIcon');
-        this.destinationActiveAirportOptions = page.locator('div.DestinationsList__droplistContainer label:has(input[type=checkbox]:not([disabled]))');
+        this.destinationActiveAirportOptions = page.locator(
+            'div.DestinationsList__droplistContainer label:has(input[type=checkbox]:not([disabled]))',
+        );
 
         // ── Date picker ──────────────────────────────────────────────────────────
         this.availableDateCells = page.locator('td.SelectLegacyDate__available');
@@ -92,7 +99,7 @@ export class SearchPanel {
 
             const picked = pickRandom(options);
             await picked.click();
-            const placeholder = (await this.departureAirportField.getAttribute('placeholder') ?? '').trim();
+            const placeholder = ((await this.departureAirportField.getAttribute('placeholder')) ?? '').trim();
             console.log(`✓ Departure airport placeholder: ${placeholder}`);
             expect(placeholder).not.toBe('');
             return placeholder;
@@ -109,18 +116,17 @@ export class SearchPanel {
             await this.departureAirportField.first().click();
             await expect(this.departureActiveAirportOptions.first()).toBeVisible();
 
-            const airportOption = this.departureActiveAirportOptions.filter({hasText: airport});
+            const airportOption = this.departureActiveAirportOptions.filter({ hasText: airport });
             const airportCount = await airportOption.count();
             expect(airportCount, `Departure airport "${airport}" not found`).toBeGreaterThan(0);
             await airportOption.first().click();
 
-            const placeholder = (await this.departureAirportField.getAttribute('placeholder') ?? '').trim();
+            const placeholder = ((await this.departureAirportField.getAttribute('placeholder')) ?? '').trim();
             expect(placeholder, `Could not select departure airport: ${airport}`).not.toBe('');
             console.log(`✓ Departure airport selected: ${placeholder}`);
             return placeholder;
         });
     }
-
 
     // ── Destination ────────────────────────────────────────────────────────────
 
@@ -136,13 +142,13 @@ export class SearchPanel {
             expect(countryOptions.length, 'No destination options found').toBeGreaterThan(0);
             const pickedCountry = pickRandom(countryOptions);
             await pickedCountry.click();
-            let placeholder = (await this.destinationField.getAttribute('placeholder') ?? '').trim();
+            let placeholder = ((await this.destinationField.getAttribute('placeholder')) ?? '').trim();
             expect(placeholder, "Can't find available country").not.toBe('');
             await expect(this.destinationAirportOptions.first()).toBeVisible();
             const airportAvailableOptions = await this.destinationActiveAirportOptions.all();
             const pickedAirport = pickRandom(airportAvailableOptions);
             await pickedAirport.click();
-            placeholder = (await this.destinationField.getAttribute('placeholder') ?? '').trim();
+            placeholder = ((await this.destinationField.getAttribute('placeholder')) ?? '').trim();
             expect(placeholder, "Can't find available airports").not.toBe('');
             return placeholder;
         });
@@ -161,29 +167,32 @@ export class SearchPanel {
             await expect(this.destinationCountrySelectableOptions.first()).toBeVisible();
 
             // ── Country ──────────────────────────────────────────────────────────
-            const countryOption = this.destinationCountrySelectableOptions.filter({hasText: country});
+            const countryOption = this.destinationCountrySelectableOptions.filter({ hasText: country });
             const countryCount = await countryOption.count();
             expect(countryCount, `Country "${country}" not found in destination list`).toBeGreaterThan(0);
             await countryOption.first().click();
 
-            let placeholder = (await this.destinationField.getAttribute('placeholder') ?? '').trim();
+            let placeholder = ((await this.destinationField.getAttribute('placeholder')) ?? '').trim();
             expect(placeholder, `Can't find available country: ${country}`).not.toBe('');
 
             // ── Airport ──────────────────────────────────────────────────────────
             await expect(this.destinationAirportOptions.first()).toBeVisible();
             if (airport) {
-                const airportOption = this.destinationActiveAirportOptions.filter({hasText: airport});
+                const airportOption = this.destinationActiveAirportOptions.filter({ hasText: airport });
                 const airportCount = await airportOption.count();
                 expect(airportCount, `Airport "${airport}" not found for country "${country}"`).toBeGreaterThan(0);
                 await airportOption.first().click();
             } else {
                 const airportAvailableOptions = await this.destinationActiveAirportOptions.all();
-                expect(airportAvailableOptions.length, `No airports available for country "${country}"`).toBeGreaterThan(0);
+                expect(
+                    airportAvailableOptions.length,
+                    `No airports available for country "${country}"`,
+                ).toBeGreaterThan(0);
                 const pickedAirport = pickRandom(airportAvailableOptions);
                 await pickedAirport.click();
             }
 
-            placeholder = (await this.destinationField.getAttribute('placeholder') ?? '').trim();
+            placeholder = ((await this.destinationField.getAttribute('placeholder')) ?? '').trim();
             expect(placeholder, "Can't find available airports").not.toBe('');
             return placeholder;
         });
@@ -203,7 +212,7 @@ export class SearchPanel {
             const pickedDate = pickRandom(availableDates);
             await pickedDate.click();
             await this.datesSaveBtn.click();
-            const dateLabel = (await this.departureDateField.getAttribute('value') ?? '').trim();
+            const dateLabel = ((await this.departureDateField.getAttribute('value')) ?? '').trim();
             expect(dateLabel, 'Could not find an available departure date').not.toBe('');
             console.log(`✓ Departure date selected: ${dateLabel}`);
             return dateLabel;
@@ -228,76 +237,72 @@ export class SearchPanel {
         targetChild: number = 0,
         childrenAges: number[] = [],
     ): Promise<{ rooms: number | 'default'; adults: number; childAges: string[] }> {
-        return test.step(
-            `Set Rooms & Guests: rooms=${targetRooms}, adults=${targetAdults}, children=${targetChild}`,
-            async () => {
-                await this.roomsGuestsField.first().click();
-                await this.page.waitForTimeout(500);
+        return test.step(`Set Rooms & Guests: rooms=${targetRooms}, adults=${targetAdults}, children=${targetChild}`, async () => {
+            await this.roomsGuestsField.first().click();
 
-                // Wait for the panel to be visible
-                await expect(this.adultsSelect.first()).toBeVisible()
-                    .catch(async () => {
-                        await expect(this.roomsGuestsPanel.first()).toBeVisible();
-                    });
+            // Wait for the panel to be visible
+            await expect(this.adultsSelect.first())
+                .toBeVisible()
+                .catch(async () => {
+                    await expect(this.roomsGuestsPanel.first()).toBeVisible();
+                });
 
-                // ── Rooms ──────────────────────────────────────────────────────────
-                if (targetRooms !== 'default') {
-                    await this.roomsSelect.first().selectOption({value: String(targetRooms)});
-                    await this.page.waitForTimeout(200);
-                }
-
-                // ── Adults ─────────────────────────────────────────────────────────
-                await this.adultsSelect.first().selectOption(String(targetAdults));
-                await this.page.waitForTimeout(200);
-
-                // ── Children count ─────────────────────────────────────────────────
-                if (targetChild > 0) {
-                    await this.childrenSelect.first().selectOption(String(targetChild));
-                    await this.page.waitForTimeout(400);
-                }
-
-                // ── Child ages ─────────────────────────────────────────────────────
-                const chosenAges: string[] = [];
-
-                for (let i = 0; i < targetChild; i++) {
-                    const select = this.childAgeSelect.nth(i);
-                    await expect(select).toBeVisible();
-
-                    const providedAge = childrenAges[i];
-                    let chosenAge: string;
-
-                    if (providedAge !== undefined) {
-                        chosenAge = String(providedAge);
-                        await select.selectOption(chosenAge);
-                    } else {
-                        const validAges: string[] = [];
-                        for (const opt of await select.locator('option').all()) {
-                            const val = await opt.getAttribute('value');
-                            const disabled = await opt.getAttribute('disabled');
-                            if (val && val !== '' && val !== '-1' && disabled === null) {
-                                validAges.push(val);
-                            }
-                        }
-                        expect(validAges.length, `No valid age options for child ${i + 1}`).toBeGreaterThan(0);
-                        chosenAge = pickRandom(validAges);
-                        await select.selectOption(chosenAge);
-                    }
-
-                    chosenAges.push(chosenAge);
-                }
-
-                console.log(
-                    `✓ Rooms & Guests: rooms=${targetRooms}, adults=${targetAdults}, ` +
-                    `children=${targetChild} ages=[${chosenAges.join(', ')}]`
-                );
-                try {
-                    await this.roomsGuestsApplyBtn.first().click();
-                } catch {
-                    await this.page.keyboard.press('Escape');
-                }
-                return {rooms: targetRooms, adults: targetAdults, childAges: chosenAges};
+            // ── Rooms ──────────────────────────────────────────────────────────
+            if (targetRooms !== 'default') {
+                await this.roomsSelect.first().selectOption({ value: String(targetRooms) });
+                await expect(this.adultsSelect.first()).toBeVisible();
             }
-        );
+
+            // ── Adults ─────────────────────────────────────────────────────────
+            await this.adultsSelect.first().selectOption(String(targetAdults));
+
+            // ── Children count ─────────────────────────────────────────────────
+            if (targetChild > 0) {
+                await this.childrenSelect.first().selectOption(String(targetChild));
+                await expect(this.childAgeSelect.first()).toBeVisible();
+            }
+
+            // ── Child ages ─────────────────────────────────────────────────────
+            const chosenAges: string[] = [];
+
+            for (let i = 0; i < targetChild; i++) {
+                const select = this.childAgeSelect.nth(i);
+                await expect(select).toBeVisible();
+
+                const providedAge = childrenAges[i];
+                let chosenAge: string;
+
+                if (providedAge !== undefined) {
+                    chosenAge = String(providedAge);
+                    await select.selectOption(chosenAge);
+                } else {
+                    const validAges: string[] = [];
+                    for (const opt of await select.locator('option').all()) {
+                        const val = await opt.getAttribute('value');
+                        const disabled = await opt.getAttribute('disabled');
+                        if (val && val !== '' && val !== '-1' && disabled === null) {
+                            validAges.push(val);
+                        }
+                    }
+                    expect(validAges.length, `No valid age options for child ${i + 1}`).toBeGreaterThan(0);
+                    chosenAge = pickRandom(validAges);
+                    await select.selectOption(chosenAge);
+                }
+
+                chosenAges.push(chosenAge);
+            }
+
+            console.log(
+                `✓ Rooms & Guests: rooms=${targetRooms}, adults=${targetAdults}, ` +
+                    `children=${targetChild} ages=[${chosenAges.join(', ')}]`,
+            );
+            try {
+                await this.roomsGuestsApplyBtn.first().click();
+            } catch {
+                await this.page.keyboard.press('Escape');
+            }
+            return { rooms: targetRooms, adults: targetAdults, childAges: chosenAges };
+        });
     }
 
     // ── Search submit ──────────────────────────────────────────────────────────
@@ -306,7 +311,7 @@ export class SearchPanel {
         await test.step('Submit the holiday search', async () => {
             await this.searchBtn.first().click();
             await this.page.waitForLoadState('domcontentloaded');
-            await expect(this.page).not.toHaveURL(/\/h\/nl$/, {timeout: 20_000});
+            await expect(this.page).not.toHaveURL(/\/h\/nl$/);
             console.log(`✓ Search submitted → ${this.page.url()}`);
         });
     }

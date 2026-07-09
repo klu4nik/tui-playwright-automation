@@ -1,6 +1,6 @@
-import {Page, expect, test} from '@playwright/test';
-import {CookieBanner} from '../components/CookieBanner';
-import {SearchPanel} from '../components/SearchPanel';
+import { Page, expect, test } from '@playwright/test';
+import { CookieBanner } from '../components/CookieBanner';
+import { SearchPanel } from '../components/SearchPanel';
 
 /**
  * HomePage – https://www.tui.nl/h/nl
@@ -75,7 +75,12 @@ export class HomePage {
         targetChild: number = 0,
         childrenAges: number[] = [],
     ): Promise<{ rooms: number | 'default'; adults: number; childAges: string[] }> {
-        const result = await this.searchPanel.configureRoomsAndGuests(targetRooms, targetAdults, targetChild, childrenAges);
+        const result = await this.searchPanel.configureRoomsAndGuests(
+            targetRooms,
+            targetAdults,
+            targetChild,
+            childrenAges,
+        );
         // Retain the chosen child ages so the passenger-details step can fill a
         // date of birth that matches the age selected during the search.
         this.lastChildAges = result.childAges.map(Number);

@@ -42,23 +42,13 @@ export interface PassengerData {
     mobileNumber: string;
 }
 
-const FIRST_NAMES_MALE = [
-    'Jan', 'Pieter', 'Thomas', 'Lars', 'Sander', 'Bram', 'Kevin', 'David',
-];
-const FIRST_NAMES_FEMALE = [
-    'Emma', 'Sophie', 'Lisa', 'Anna', 'Laura', 'Lotte', 'Nina', 'Eva',
-];
-const LAST_NAMES = [
-    'de Vries', 'Jansen', 'de Boer', 'Visser', 'Smit', 'Meijer', 'van den Berg', 'Peters',
-];
+const FIRST_NAMES_MALE = ['Jan', 'Pieter', 'Thomas', 'Lars', 'Sander', 'Bram', 'Kevin', 'David'];
+const FIRST_NAMES_FEMALE = ['Emma', 'Sophie', 'Lisa', 'Anna', 'Laura', 'Lotte', 'Nina', 'Eva'];
+const LAST_NAMES = ['de Vries', 'Jansen', 'de Boer', 'Visser', 'Smit', 'Meijer', 'van den Berg', 'Peters'];
 
-const CITIES = [
-    'Amsterdam', 'Rotterdam', 'Den Haag', 'Utrecht', 'Eindhoven', 'Groningen', 'Maastricht', 'Breda',
-];
+const CITIES = ['Amsterdam', 'Rotterdam', 'Den Haag', 'Utrecht', 'Eindhoven', 'Groningen', 'Maastricht', 'Breda'];
 
-export function generatePassengerData(
-    options: { isChild?: boolean; childAge?: number } = {}
-): PassengerData {
+export function generatePassengerData(options: { isChild?: boolean; childAge?: number } = {}): PassengerData {
     const gender = pickRandom<'male' | 'female'>(['male', 'female']);
     const firstName = pickRandom(gender === 'male' ? FIRST_NAMES_MALE : FIRST_NAMES_FEMALE);
     const lastName = pickRandom(LAST_NAMES);
@@ -92,7 +82,6 @@ export function generatePassengerData(
 
     // Phone (NL mobile format)
     const phone = `06${randomInt(10000000, 99999999)}`;
-
 
     // Passport expiry – at least 6 months from today
     const expiryDate = new Date(now.getFullYear() + randomInt(1, 5), randomInt(0, 11), randomInt(1, 28));

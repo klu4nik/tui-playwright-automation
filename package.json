@@ -10,11 +10,21 @@
     "test:booking": "playwright test tests/booking-journey.spec.ts",
     "test:validation": "playwright test tests/passenger-validation.spec.ts",
     "report": "playwright show-report",
-    "codegen": "playwright codegen https://www.tui.nl/h/nl"
+    "codegen": "playwright codegen https://www.tui.nl/h/nl",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",
     "@types/node": "^20.12.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
     "typescript": "^5.4.0"
   }
 }

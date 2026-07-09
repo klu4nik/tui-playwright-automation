@@ -1,4 +1,4 @@
-import {Page, Locator, expect, test} from '@playwright/test';
+import { Page, Locator, expect, test } from '@playwright/test';
 
 /**
  * CookieBanner – encapsulates the OneTrust / custom consent overlay on TUI.nl.
@@ -11,19 +11,16 @@ export class CookieBanner {
 
     constructor(private readonly page: Page) {
         this.banner = page.locator(
-            '#onetrust-banner-sdk, ' +
-            '[data-testid="cookie-banner"], ' +
-            '.cookie-consent, ' +
-            '#cookieConsent'
+            '#onetrust-banner-sdk, ' + '[data-testid="cookie-banner"], ' + '.cookie-consent, ' + '#cookieConsent',
         );
 
         this.acceptBtn = page.locator(
             '#onetrust-accept-btn-handler, ' +
-            '[data-testid="cookie-accept"], ' +
-            'button:has-text("Alles accepteren"), ' +
-            'button:has-text("Accepteer"), ' +
-            'button:has-text("Akkoord"), ' +
-            'button:has-text("Accept all")'
+                '[data-testid="cookie-accept"], ' +
+                'button:has-text("Alles accepteren"), ' +
+                'button:has-text("Accepteer"), ' +
+                'button:has-text("Akkoord"), ' +
+                'button:has-text("Accept all")',
         );
     }
 
@@ -35,16 +32,16 @@ export class CookieBanner {
     async accept(): Promise<void> {
         await test.step('Accept the cookie consent banner', async () => {
             try {
-                await this.acceptBtn.waitFor({state: 'visible', timeout: 10_000});
+                await this.acceptBtn.waitFor({ state: 'visible' });
                 await this.acceptBtn.click();
-                await this.banner.waitFor({state: 'hidden', timeout: 8_000}).catch(() => {
-                });
+                await this.banner.waitFor({ state: 'hidden' }).catch(() => {});
                 console.log('✓ Cookie banner accepted');
             } catch {
                 console.log('ℹ Cookie banner not found or already dismissed');
             }
-            await expect(this.banner).not.toBeVisible({timeout: 5_000}).catch(() => {
-            });
+            await expect(this.banner)
+                .not.toBeVisible()
+                .catch(() => {});
         });
     }
 }

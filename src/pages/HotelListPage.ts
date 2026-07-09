@@ -1,4 +1,4 @@
-import {Page, Locator, test} from '@playwright/test';
+import { Page, Locator, test } from '@playwright/test';
 
 /**
  * HotelListPage – the search results page where hotel cards are listed.
@@ -8,18 +8,13 @@ import {Page, Locator, test} from '@playwright/test';
  */
 export class HotelListPage {
     readonly page: Page;
-    readonly loadingOverlay: Locator;
     readonly continueToHotelBookingButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
 
-        this.loadingOverlay = page.locator(
-            '[class*="loading"], [class*="spinner"], [aria-busy="true"]'
-        );
-
         this.continueToHotelBookingButton = page.locator(
-            '.ResultListItemV2__showPackage button[data-test-id="continue-button"]'
+            '.ResultListItemV2__showPackage button[data-test-id="continue-button"]',
         );
     }
 
@@ -28,9 +23,7 @@ export class HotelListPage {
     async waitForPage(): Promise<void> {
         await test.step('Verify hotel list / details page loaded', async () => {
             await this.page.waitForLoadState('domcontentloaded');
-            await this.loadingOverlay.waitFor({state: 'hidden', timeout: 30_000}).catch(() => {
-            });
-            await this.continueToHotelBookingButton.first().waitFor({state: 'visible', timeout: 20_000});
+            await this.continueToHotelBookingButton.first().waitFor({ state: 'visible' });
             console.log(`✓ Hotel page loaded: ${this.page.url()}`);
         });
     }
