@@ -33,10 +33,10 @@ export class SearchResultsPage {
     );
 
     this.hotelCards = page.locator(
+      '.ResultListItemV2, ' +
+      '[class*="ResultListItem"], ' +
       '[data-testid="hotel-card"], ' +
       '[class*="hotel-card"], ' +
-      '[class*="result-item"], ' +
-      '[class*="accommodation-card"], ' +
       'article[class*="hotel"]'
     );
 

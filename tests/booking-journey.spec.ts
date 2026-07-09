@@ -24,7 +24,7 @@ test.describe('TUI.nl Holiday Booking Journey', () => {
 
   test('Complete booking funnel from homepage to passenger details', async ({
     homePage,
-    searchResultsPage,
+    hotelListPage,
     hotelDetailsPage,
     flightSelectionPage,
     passengerDetailsPage,
@@ -52,16 +52,17 @@ test.describe('TUI.nl Holiday Booking Journey', () => {
     await homePage.clickSearch();
 
     // Step 8 – Click the first hotel in results
-    const hotelName = await searchResultsPage.clickFirstHotel();
+    await hotelListPage.waitForPage();
+    await hotelListPage.clickFirstContinueButton() 
 
     // Step 9 – Verify hotel details page and continue
     await hotelDetailsPage.waitForPage();
-    await hotelDetailsPage.assertHotelNameVisible(hotelName);
-    await hotelDetailsPage.clickContinue();
+    await hotelDetailsPage.clickRandomAvailableDate();
+    await hotelDetailsPage.clickBookButton();
 
     // Step 10 – Select the first available flight and continue
     await flightSelectionPage.waitForPage();
-    await flightSelectionPage.selectFirstAvailableFlight();
+    await flightSelectionPage.selectRandomAlternativeFlight;
     await flightSelectionPage.clickContinue();
 
     // Step 11 – Verify arrival on the Passenger Details page
@@ -72,6 +73,5 @@ test.describe('TUI.nl Holiday Booking Journey', () => {
     console.log(`   Destination: ${destination}`);
     console.log(`   Date:        ${departureDate}`);
     console.log(`   Guests:      2 adults + 1 child (age ${childAges[0]})`);
-    console.log(`   Hotel:       ${hotelName}`);
   });
 });

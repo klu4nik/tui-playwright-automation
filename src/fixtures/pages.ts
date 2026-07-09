@@ -1,9 +1,10 @@
 import { test as base } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 import { SearchResultsPage } from '../pages/SearchResultsPage';
-import { HotelDetailsPage } from '../pages/HotelDetailsPage';
+import { HotelListPage } from '../pages/HotelListPage';
 import { FlightSelectionPage } from '../pages/FlightSelectionPage';
 import { PassengerDetailsPage } from '../pages/PassengerDetailsPage';
+import { HotelDetailsPage } from '@pages/HotelDetailsPage';
 
 /**
  * Extended Playwright fixture that injects all Page Object instances
@@ -15,7 +16,8 @@ import { PassengerDetailsPage } from '../pages/PassengerDetailsPage';
 type PageFixtures = {
   homePage: HomePage;
   searchResultsPage: SearchResultsPage;
-  hotelDetailsPage: HotelDetailsPage;
+  hotelListPage: HotelListPage;
+  hotelDetailsPage : HotelDetailsPage;
   flightSelectionPage: FlightSelectionPage;
   passengerDetailsPage: PassengerDetailsPage;
 };
@@ -26,6 +28,9 @@ export const test = base.extend<PageFixtures>({
   },
   searchResultsPage: async ({ page }, use) => {
     await use(new SearchResultsPage(page));
+  },
+  hotelListPage: async ({ page }, use) => {
+    await use(new HotelListPage(page));
   },
   hotelDetailsPage: async ({ page }, use) => {
     await use(new HotelDetailsPage(page));

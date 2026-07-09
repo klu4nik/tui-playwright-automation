@@ -32,6 +32,13 @@ export interface PassengerData {
   passportNumber: string;
   /** ISO 8601 date string for passport expiry, at least 6 months in the future */
   passportExpiry: string;
+  // ── Address / contact ───────────────────────────────────────────────────
+  country: string;
+  streetName: string;
+  houseNumber: string;
+  postalCode: string;
+  mobileCountryCode: string;
+  mobileNumber: string;
 }
 
 const FIRST_NAMES_MALE = [
@@ -70,12 +77,6 @@ export function generatePassengerData(
   // Phone (NL mobile format)
   const phone = `06${randomInt(10000000, 99999999)}`;
 
-  // Passport expiry – at least 6 months from today
-  const expiryDate = new Date(now.getFullYear() + randomInt(1, 5), randomInt(0, 11), randomInt(1, 28));
-  const passportExpiry = expiryDate.toISOString().split('T')[0];
-
-  // Passport number (mock)
-  const passportNumber = `NL${randomInt(10000000, 99999999)}`;
 
   return {
     firstName,
@@ -87,6 +88,12 @@ export function generatePassengerData(
     nationality: 'NL',
     passportNumber,
     passportExpiry,
+    country: 'NL',
+    streetName: pickRandom(['Keizersgracht', 'Herengracht', 'Prinsengracht', 'Damrak', 'Kalverstraat']),
+    houseNumber: String(randomInt(1, 250)),
+    postalCode: `${randomInt(1000, 9999)}${pickRandom(['AB', 'CD', 'EF', 'GH', 'XZ'])}`,
+    mobileCountryCode: '+31',
+    mobileNumber: `06${randomInt(10000000, 99999999)}`,
   };
 }
 

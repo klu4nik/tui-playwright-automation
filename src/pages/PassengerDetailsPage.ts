@@ -1,5 +1,5 @@
 import { Page, Locator, expect, test } from '@playwright/test';
-import { INVALID_PASSENGER_DATA } from '../helpers/random';
+import { INVALID_PASSENGER_DATA, PassengerData } from '../helpers/random';
 
 /**
  * PassengerDetailsPage – the form where travellers fill in their personal
@@ -15,19 +15,28 @@ export class PassengerDetailsPage {
   readonly loadingOverlay: Locator;
 
   // ── First passenger (adult 1) form fields ─────────────────────────────────
-  readonly firstNameInput: Locator;
-  readonly lastNameInput: Locator;
-  readonly dateOfBirthInput: Locator;
-  readonly genderSelect: Locator;
-  readonly nationalitySelect: Locator;
-  readonly passportNumberInput: Locator;
-  readonly passportExpiryInput: Locator;
+  readonly firstNameAdultInput: Locator;
+  readonly lastNameAdultInput: Locator;
+  readonly genderAdultSelect: Locator;
+  readonly dateOfBirthDDInput: Locator;
+  readonly dateOfBirthMMInput: Locator;
+  readonly dateOfBirthYYYYInput: Locator;
+  readonly nationalityAdultSelect: Locator;
   readonly emailInput: Locator;
   readonly phoneInput: Locator;
+  readonly firstNameKid: Locator;
+  readonly lastNameKid: Locator;
+  readonly genderKidSelecr: Locator;
 
-  // ── Contact / booking details ─────────────────────────────────────────────
-  readonly contactEmailInput: Locator;
-  readonly contactPhoneInput: Locator;
+
+  // ── Address / contact fields ──────────────────────────────────────────────
+  readonly landAdultDropdown: Locator;
+  readonly streetNameInput: Locator;
+  readonly houseNumberInput: Locator;
+  readonly postalCodeInput: Locator;
+  readonly mobileNumberIndexDropdown: Locator;
+  readonly mobileNumberInput: Locator;
+
 
   // ── Form-level submit / continue ──────────────────────────────────────────
   readonly submitBtn: Locator;
@@ -42,8 +51,6 @@ export class PassengerDetailsPage {
   readonly phoneError: Locator;
   readonly genderError: Locator;
   readonly nationalityError: Locator;
-  readonly passportError: Locator;
-  readonly passportExpiryError: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -60,98 +67,34 @@ export class PassengerDetailsPage {
       'h1, h2'
     ).first();
 
-    this.firstNameInput = page.locator(
-      '[data-testid="passenger-firstname"], ' +
-      'input[name*="firstname" i], ' +
-      'input[name*="first_name" i], ' +
-      'input[name*="voornaam" i], ' +
-      '[aria-label*="voornaam" i], ' +
-      '[placeholder*="voornaam" i], ' +
-      'input[id*="firstname" i], ' +
-      'input[id*="first-name" i]'
-    ).first();
+    this.firstNameAdultInput = page.locator('input[id^="FIRSTNAMEADULT"]');
 
-    this.lastNameInput = page.locator(
-      '[data-testid="passenger-lastname"], ' +
-      'input[name*="lastname" i], ' +
-      'input[name*="last_name" i], ' +
-      'input[name*="achternaam" i], ' +
-      '[aria-label*="achternaam" i], ' +
-      '[placeholder*="achternaam" i], ' +
-      'input[id*="lastname" i], ' +
-      'input[id*="last-name" i]'
-    ).first();
+    this.lastNameAdultInput = page.locator('input[id^="SURNAMEADULT"]');
+    this.genderAdultSelect = page.locator('select[id^="GENDERADULT"]')
+    this.firstNameKid = page.locator('input[id^="FIRSTNAMECHILD"]');
+    this.lastNameKid = page.locator('input[id^="LASTNAMECHILD"');
+    this.genderKidSelecr = page.locator('select[id^="GENDERCHILD]');
 
-    this.dateOfBirthInput = page.locator(
-      '[data-testid="passenger-dob"], ' +
-      'input[name*="dob" i], ' +
-      'input[name*="birthdate" i], ' +
-      'input[name*="geboortedatum" i], ' +
-      '[aria-label*="geboortedatum" i], ' +
-      '[placeholder*="geboortedatum" i], ' +
-      'input[type="date"]'
-    ).first();
+    this.dateOfBirthDDInput = page.locator('.DateInput__field input[aria-label="day"]');
+    this.dateOfBirthMMInput = page.locator('.DateInput__field input[aria-label="month"]');
+    this.dateOfBirthYYYYInput = page.locator('.DateInput__field input[aria-label="year"]');
 
-    this.genderSelect = page.locator(
-      '[data-testid="passenger-gender"], ' +
-      'select[name*="gender" i], ' +
-      'select[name*="geslacht" i], ' +
-      '[aria-label*="geslacht" i], ' +
-      'select[id*="gender" i]'
-    ).first();
+    this.nationalityAdultSelect = page.locator('select[id^="NATIONALITYADULT"], input[id^="NATIONALITYADULT"]');
 
-    this.nationalitySelect = page.locator(
-      '[data-testid="passenger-nationality"], ' +
-      'select[name*="nationality" i], ' +
-      'select[name*="nationaliteit" i], ' +
-      '[aria-label*="nationaliteit" i]'
-    ).first();
+    this.landAdultDropdown = page.locator('select[id^="COUNTRYADULT"], input[id^="COUNTRYADULT"]');
 
-    this.passportNumberInput = page.locator(
-      '[data-testid="passenger-passport"], ' +
-      'input[name*="passport" i], ' +
-      'input[name*="paspoort" i], ' +
-      '[aria-label*="paspoortnummer" i], ' +
-      '[placeholder*="paspoort" i]'
-    ).first();
+    this.streetNameInput = page.locator('input[id^="STREETADULT"]');
 
-    this.passportExpiryInput = page.locator(
-      '[data-testid="passport-expiry"], ' +
-      'input[name*="expiry" i], ' +
-      'input[name*="vervaldatum" i], ' +
-      '[aria-label*="vervaldatum" i], ' +
-      '[placeholder*="vervaldatum" i]'
-    ).first();
+    this.houseNumberInput = page.locator('input[id^="HOUSENUMBERADULT"]');
 
-    this.emailInput = page.locator(
-      '[data-testid="passenger-email"], ' +
-      'input[name*="email" i][type="email"], ' +
-      'input[id*="email" i], ' +
-      '[aria-label*="e-mailadres" i], ' +
-      '[placeholder*="e-mailadres" i], ' +
-      'input[type="email"]'
-    ).first();
+    this.postalCodeInput = page.locator('input[id^="POSTALCODEADULT"]');
 
-    this.phoneInput = page.locator(
-      '[data-testid="passenger-phone"], ' +
-      'input[name*="phone" i], ' +
-      'input[name*="telefoon" i], ' +
-      '[aria-label*="telefoonnummer" i], ' +
-      '[placeholder*="telefoon" i], ' +
-      'input[type="tel"]'
-    ).first();
+    this.mobileNumberIndexDropdown = page.locator('select[id^="MOBILENUMBERINDEXADULT"]');
 
-    this.contactEmailInput = page.locator(
-      '[data-testid="contact-email"], ' +
-      'input[name="contactEmail"], ' +
-      'input[id*="contact-email" i]'
-    ).first();
+    this.mobileNumberInput = page.locator('input[id^="MOBILENUMBERADULT"]');
 
-    this.contactPhoneInput = page.locator(
-      '[data-testid="contact-phone"], ' +
-      'input[name="contactPhone"], ' +
-      'input[id*="contact-phone" i]'
-    ).first();
+    this.emailInput = page.locator('input[id^="EMAILADDRESSADULT"]');
+
 
     this.submitBtn = page.locator(
       '[data-testid="passenger-submit"], ' +
@@ -171,80 +114,22 @@ export class PassengerDetailsPage {
 
     // ── Error messages ─────────────────────────────────────────────────────
     this.allErrorMessages = page.locator(
-      '[role="alert"], ' +
-      '[class*="error-message"], ' +
-      '[class*="validation-error"], ' +
-      '[class*="field-error"], ' +
-      '[class*="form-error"], ' +
-      '.error, ' +
-      '[data-testid*="error"]'
+      '.inputs__errorMessageWithIcon'
     );
 
-    this.firstNameError = page.locator(
-      '[data-testid="firstname-error"], ' +
-      '[id*="firstname"][id*="error"], ' +
-      'input[name*="voornaam" i] ~ [class*="error"], ' +
-      'input[name*="firstname" i] ~ [class*="error"], ' +
-      '[class*="firstname"] [class*="error"], ' +
-      '[class*="first-name"] [class*="error"]'
-    ).first();
+    this.firstNameError = page.locator('[id^="FIRSTNAMEADULT"][id$="__errorMessage"]');
 
-    this.lastNameError = page.locator(
-      '[data-testid="lastname-error"], ' +
-      '[id*="lastname"][id*="error"], ' +
-      'input[name*="achternaam" i] ~ [class*="error"], ' +
-      'input[name*="lastname" i] ~ [class*="error"], ' +
-      '[class*="lastname"] [class*="error"], ' +
-      '[class*="last-name"] [class*="error"]'
-    ).first();
+    this.lastNameError = page.locator('[id^="LASTNAMEADULT"][id$="__errorMessage"]');
 
-    this.dateOfBirthError = page.locator(
-      '[data-testid="dob-error"], ' +
-      'input[name*="geboortedatum" i] ~ [class*="error"], ' +
-      'input[name*="dob" i] ~ [class*="error"], ' +
-      '[class*="birthdate"] [class*="error"], ' +
-      '[class*="dob"] [class*="error"]'
-    ).first();
+    this.dateOfBirthError = page.locator('.DateOfBirth__inputTextBox .inputs__errorMessageIcon');
 
-    this.emailError = page.locator(
-      '[data-testid="email-error"], ' +
-      'input[type="email"] ~ [class*="error"], ' +
-      'input[name*="email" i] ~ [class*="error"], ' +
-      '[class*="email"] [class*="error"]'
-    ).first();
+    this.emailError = page.locator('[id^="EMAILADDRESSADULT"][id$="__errorMessage"]');
 
-    this.phoneError = page.locator(
-      '[data-testid="phone-error"], ' +
-      'input[name*="telefoon" i] ~ [class*="error"], ' +
-      'input[name*="phone" i] ~ [class*="error"], ' +
-      '[class*="phone"] [class*="error"], ' +
-      '[class*="telefoon"] [class*="error"]'
-    ).first();
+    this.phoneError = page.locator('[id^="MOBILENUMBERADULT"][id$="__errorMessage"]');
 
-    this.genderError = page.locator(
-      '[data-testid="gender-error"], ' +
-      'select[name*="gender" i] ~ [class*="error"], ' +
-      '[class*="gender"] [class*="error"]'
-    ).first();
+    this.genderError = page.locator('');
 
-    this.nationalityError = page.locator(
-      '[data-testid="nationality-error"], ' +
-      'select[name*="nationality" i] ~ [class*="error"], ' +
-      '[class*="nationality"] [class*="error"]'
-    ).first();
-
-    this.passportError = page.locator(
-      '[data-testid="passport-error"], ' +
-      'input[name*="passport" i] ~ [class*="error"], ' +
-      '[class*="passport"] [class*="error"]'
-    ).first();
-
-    this.passportExpiryError = page.locator(
-      '[data-testid="passport-expiry-error"], ' +
-      'input[name*="expiry" i] ~ [class*="error"], ' +
-      '[class*="expiry"] [class*="error"], ' +
-      '[class*="vervaldatum"] [class*="error"]'
-    ).first();
+    this.nationalityError = page.locator('');
   }
 
   // ── Page lifecycle ─────────────────────────────────────────────────────────
@@ -260,11 +145,11 @@ export class PassengerDetailsPage {
         { timeout: 15_000 }
       ).catch(async () => {
         console.warn('  ⚠ URL pattern not matched; checking form fields directly');
-        await expect(this.firstNameInput).toBeVisible({ timeout: 10_000 });
+        await expect(this.firstNameAdultInput).toBeVisible({ timeout: 10_000 });
       });
 
-      const hasFirstName = await this.firstNameInput.isVisible().catch(() => false);
-      const hasLastName  = await this.lastNameInput.isVisible().catch(() => false);
+      const hasFirstName = await this.firstNameAdultInput.isVisible().catch(() => false);
+      const hasLastName  = await this.lastNameAdultInput.isVisible().catch(() => false);
       expect(
         hasFirstName || hasLastName,
         'Passenger details form fields should be visible on the passenger page'
@@ -285,6 +170,119 @@ export class PassengerDetailsPage {
   async clearField(locator: Locator): Promise<void> {
     await locator.waitFor({ state: 'visible', timeout: 8_000 });
     await locator.clear();
+  }
+
+  // ── Fill traveler details ─────────────────────────────────────────────────
+
+  /**
+   * Fills in all fields for a single traveler (adult 1 / lead passenger).
+   * Skips any field that is not visible on the page.
+   *
+   * @param data - Generated or custom PassengerData object
+   */
+  async fillTravelerDetails(data: PassengerData): Promise<void> {
+    await test.step(`Fill traveler details for ${data.firstName} ${data.lastName}`, async () => {
+
+      // ── Personal details ──────────────────────────────────────────────
+      await test.step('Fill first name', async () => {
+        await this.fillField(this.firstNameAdultInput.first(), data.firstName);
+      });
+
+      await test.step('Fill last name', async () => {
+        await this.fillField(this.lastNameAdultInput.first(), data.lastName);
+      });
+
+      await test.step('Select gender', async () => {
+        const genderVisible = await this.genderAdultSelect.first().isVisible().catch(() => false);
+        if (genderVisible) {
+          // radio buttons – click the one matching gender
+          const genderValue = data.gender === 'male' ? 'M' : 'F';
+          const radio = this.page.locator(
+            `input[id^="GENDERADULT"][value="${genderValue}"], ` +
+            `input[id^="GENDERADULT"][value="${data.gender}"]`
+          ).first();
+          if (await radio.isVisible().catch(() => false)) {
+            await radio.click();
+          }
+        }
+      });
+
+      await test.step('Fill date of birth', async () => {
+        const [yyyy, mm, dd] = data.dateOfBirth.split('-');
+        if (await this.dateOfBirthDDInput.isVisible().catch(() => false)) {
+          await this.fillField(this.dateOfBirthDDInput, dd);
+        }
+        if (await this.dateOfBirthMMInput.isVisible().catch(() => false)) {
+          await this.fillField(this.dateOfBirthMMInput, mm);
+        }
+        if (await this.dateOfBirthYYYYInput.isVisible().catch(() => false)) {
+          await this.fillField(this.dateOfBirthYYYYInput, yyyy);
+        }
+      });
+
+      await test.step('Select nationality', async () => {
+        const visible = await this.nationalityAdultSelect.first().isVisible().catch(() => false);
+        if (visible) {
+          await this.nationalityAdultSelect.first().selectOption(data.nationality).catch(async () => {
+            await this.fillField(this.nationalityAdultSelect.first(), data.nationality);
+          });
+        }
+      });
+
+      // ── Contact details ───────────────────────────────────────────────
+      await test.step('Fill email', async () => {
+        const visible = await this.emailInput.isVisible().catch(() => false);
+        if (visible) await this.fillField(this.emailInput, data.email);
+      });
+
+      await test.step('Fill phone', async () => {
+        const visible = await this.phoneInput.isVisible().catch(() => false);
+        if (visible) await this.fillField(this.phoneInput, data.phone);
+      });
+
+      // ── Address fields ────────────────────────────────────────────────
+      await test.step('Select country', async () => {
+        const visible = await this.landAdultDropdown.first().isVisible().catch(() => false);
+        if (visible) {
+          await this.landAdultDropdown.first().selectOption(data.country).catch(async () => {
+            await this.fillField(this.landAdultDropdown.first(), data.country);
+          });
+        }
+      });
+
+      await test.step('Fill street name', async () => {
+        const visible = await this.streetNameInput.first().isVisible().catch(() => false);
+        if (visible) await this.fillField(this.streetNameInput.first(), data.streetName);
+      });
+
+      await test.step('Fill house number', async () => {
+        const visible = await this.houseNumberInput.first().isVisible().catch(() => false);
+        if (visible) await this.fillField(this.houseNumberInput.first(), data.houseNumber);
+      });
+
+      await test.step('Fill postal code', async () => {
+        const visible = await this.postalCodeInput.first().isVisible().catch(() => false);
+        if (visible) await this.fillField(this.postalCodeInput.first(), data.postalCode);
+      });
+
+      // ── Mobile number ─────────────────────────────────────────────────
+      await test.step('Select mobile country code', async () => {
+        const visible = await this.mobileNumberIndexDropdown.first().isVisible().catch(() => false);
+        if (visible) {
+          await this.mobileNumberIndexDropdown.first()
+            .selectOption(data.mobileCountryCode).catch(async () => {
+              await this.fillField(this.mobileNumberIndexDropdown.first(), data.mobileCountryCode);
+            });
+        }
+      });
+
+      await test.step('Fill mobile number', async () => {
+        const visible = await this.mobileNumberInput.first().isVisible().catch(() => false);
+        if (visible) await this.fillField(this.mobileNumberInput.first(), data.mobileNumber);
+      });
+
+      console.log(`✓ Traveler details filled: ${data.firstName} ${data.lastName}`);
+    });
   }
 
   // ── Validation actions ────────────────────────────────────────────────────
@@ -354,9 +352,9 @@ export class PassengerDetailsPage {
 
   async validateMissingFirstName(): Promise<void> {
     await test.step('Validate: missing first name shows required-field error', async () => {
-      await this.clearField(this.firstNameInput);
+      await this.clearField(this.firstNameAdultInput);
       await this.triggerValidation();
-      await this.assertFieldError(this.firstNameInput);
+      await this.assertFieldError(this.firstNameAdultInput);
       const errors = await this.getVisibleErrorTexts();
       console.log(`✓ First name blank – errors: ${errors.join(' | ')}`);
     });
@@ -364,17 +362,17 @@ export class PassengerDetailsPage {
 
   async validateMissingLastName(): Promise<void> {
     await test.step('Validate: missing last name shows required-field error', async () => {
-      await this.clearField(this.lastNameInput);
+      await this.clearField(this.lastNameAdultInput);
       await this.triggerValidation();
-      await this.assertFieldError(this.lastNameInput);
+      await this.assertFieldError(this.lastNameAdultInput);
     });
   }
 
   async validateNumericFirstName(): Promise<void> {
     await test.step('Validate: numeric first name shows invalid-input error', async () => {
-      await this.fillField(this.firstNameInput, INVALID_PASSENGER_DATA.numericName);
+      await this.fillField(this.firstNameAdultInput, INVALID_PASSENGER_DATA.numericName);
       await this.triggerValidation();
-      await this.assertFieldError(this.firstNameInput);
+      await this.assertFieldError(this.firstNameAdultInput);
       const errors = await this.getVisibleErrorTexts();
       console.log(`✓ Numeric name – errors: ${errors.join(' | ')}`);
     });
@@ -382,9 +380,9 @@ export class PassengerDetailsPage {
 
   async validateSpecialCharLastName(): Promise<void> {
     await test.step('Validate: special characters in last name show invalid-input error', async () => {
-      await this.fillField(this.lastNameInput, INVALID_PASSENGER_DATA.specialCharName);
+      await this.fillField(this.lastNameAdultInput, INVALID_PASSENGER_DATA.specialCharName);
       await this.triggerValidation();
-      await this.assertFieldError(this.lastNameInput);
+      await this.assertFieldError(this.lastNameAdultInput);
     });
   }
 
@@ -434,14 +432,14 @@ export class PassengerDetailsPage {
 
   async validateMissingDateOfBirth(): Promise<void> {
     await test.step('Validate: missing date of birth shows required-field error', async () => {
-      const isVisible = await this.dateOfBirthInput.isVisible().catch(() => false);
+      const isVisible = await this.dateOfBirthDDInput.isVisible().catch(() => false);
       if (!isVisible) {
         console.log('ℹ Date of birth field not visible – skipping');
         return;
       }
-      await this.clearField(this.dateOfBirthInput);
+      await this.clearField(this.dateOfBirthDDInput);
       await this.triggerValidation();
-      await this.assertFieldError(this.dateOfBirthInput);
+      await this.assertFieldError(this.dateOfBirthDDInput);
     });
   }
 
@@ -476,11 +474,11 @@ export class PassengerDetailsPage {
   async validateAllFieldsBlank(): Promise<void> {
     await test.step('Validate: submitting all fields blank shows multiple errors', async () => {
       for (const field of [
-        this.firstNameInput,
-        this.lastNameInput,
+        this.firstNameAdultInput,
+        this.lastNameAdultInput,
         this.emailInput,
         this.phoneInput,
-        this.dateOfBirthInput,
+        this.dateOfBirthDDInput,
       ]) {
         const visible = await field.isVisible().catch(() => false);
         if (visible) await this.clearField(field);

@@ -1,4 +1,5 @@
 import { Page, Locator, expect, test } from '@playwright/test';
+import { pickRandom } from '../helpers/random';
 
 /**
  * SearchPanel – the holiday search widget on the TUI.nl homepage.
@@ -46,70 +47,33 @@ export class SearchPanel {
   constructor(private readonly page: Page) {
     // ── Fields ───────────────────────────────────────────────────────────────
     this.departureAirportField = page.locator('[data-test-id="airport-input"]');
-
     this.destinationField = page.locator('[data-test-id="destination-input"]');
-    this.destinationAirportSelectionButton = page.locator(
-      '//input[@data-test-id="destination-input"]/..//span/span/span'
-    );
-
-    this.departureDateField = page.locator(
-      '[data-test-id="departure-date-input"]'
-    );
-
-    this.roomsGuestsField = page.locator(
-      '[data-test-id="rooms-and-guest-input"]'
-    );
-
-    this.searchBtn = page.locator(
-        '[data-test-id="search-button"]'
-    );
-
-    this.departureAirportOptions = page.locator(
-      'div[class="SelectAirports__groupcontainer"] .inputs__checkIcon'
-    );
-
+    this.destinationAirportSelectionButton = page.locator('//input[@data-test-id="destination-input"]/..//span/span/span');
+    this.departureDateField = page.locator('[data-test-id="departure-date-input"]');
+    this.roomsGuestsField = page.locator('[data-test-id="rooms-and-guest-input"]');
+    this.searchBtn = page.locator('[data-test-id="search-button"]');
     // ── Departure airport dropdown ───────────────────────────────────────────
-    this.departureAirportOptions = page.locator(
-      'div.SelectAirports__groupcontainer .inputs__checkIcon'
-    );
+    this.departureAirportOptions = page.locator('div.SelectAirports__groupcontainer .inputs__checkIcon');
 
     // ── Destination dropdown ─────────────────────────────────────────────────
     this.destinationCountryOptions = page.locator('ul.DestinationsList__destinationListStyle > li'
     );
     this.destinationCountrySelectableOptions = page.locator('ul.DestinationsList__destinationListStyle > li > a:not(.DestinationsList__disabled)');
-
     this.destinationAirportOptions = page.locator('div.DestinationsList__droplistContainer .inputs__checkIcon');
     this.destinationActiveAirportOptions = page.locator('div.DestinationsList__droplistContainer label:has(input[type=checkbox]:not([disabled]))');
 
     // ── Date picker ──────────────────────────────────────────────────────────
-    this.availableDateCells = page.locator(
-      'td.SelectLegacyDate__available'
-    );
-    this.monthSelectorButton = page.locator(
-      'a.SelectLegacyDate__monthNavigator');
-
+    this.availableDateCells = page.locator('td.SelectLegacyDate__available');
+    this.monthSelectorButton = page.locator('a.SelectLegacyDate__monthNavigator');
     this.datesSaveBtn = page.locator('span[aria-label="Opslaan Departure date"] button');
 
     // ── Rooms & Guests panel ─────────────────────────────────────────────────
-    this.roomsGuestsPanel = page.locator(
-      '[data-test-id="rooms-and-guest-input"]'
-    );
-
+    this.roomsGuestsPanel = page.locator('[data-test-id="rooms-and-guest-input"]');
     this.roomsSelect = page.locator('div.RoomSelector__roomOptionsSelector select');
-
     this.adultsSelect = page.locator('div.AdultSelector__adultSelector select');
-
-    this.childrenSelect = page.locator(
-      'div.ChildrenSelector__childrenSelector select'
-    );
-
-    this.childAgeSelect = page.locator(
-      'li.ChildrenAge__childAgeSelector select'
-    );
-
-    this.roomsGuestsApplyBtn = page.locator(
-      'span[aria-label="Opslaan room and guest"] button'
-    );
+    this.childrenSelect = page.locator('div.ChildrenSelector__childrenSelector select');
+    this.childAgeSelect = page.locator('li.ChildrenAge__childAgeSelector select');
+    this.roomsGuestsApplyBtn = page.locator('span[aria-label="Opslaan room and guest"] button');
   }
 
   // ── Departure airport ──────────────────────────────────────────────────────
@@ -120,19 +84,14 @@ export class SearchPanel {
   async selectRandomDepartureAirport(): Promise<string> {
     return test.step('Select a random departure airport', async () => {
       await this.departureAirportField.first().click();
-
       await expect(this.departureAirportOptions.first()).toBeVisible();
-
       const options = await this.departureAirportOptions.all();
       expect(options.length, 'No departure airport options found').toBeGreaterThan(0);
 
-      const picked = options[Math.floor(Math.random() * options.length)];
-
-
+      const picked = pickRandom(options);
       await picked.click();
       const placeholder = (await this.departureAirportField.getAttribute('placeholder') ?? '').trim();
       console.log(`✓ Departure airport placeholder: ${placeholder}`);
-
       expect(placeholder).not.toBe('');
       return placeholder;
     });
@@ -148,23 +107,20 @@ export class SearchPanel {
     return test.step('Select a random destination', async () => {
       await this.destinationAirportSelectionButton.first().click();
       await expect(this.destinationCountrySelectableOptions.first()).toBeVisible();
-
       const countryOptions = await this.destinationCountrySelectableOptions.all();
       console.log(`✓ Departure coountries placeholder: ${countryOptions}`);
-
       expect(countryOptions.length, 'No destination options found').toBeGreaterThan(0);
-
-      const pickedCountry = countryOptions[Math.floor(Math.random() * countryOptions.length)];
+      const pickedCountry = pickRandom(countryOptions);
       await pickedCountry.click();
-
+      let placeholder = (await this.destinationField.getAttribute('placeholder') ?? '').trim();
+      expect(placeholder, "Can't find available country").not.toBe('');
       await expect(this.destinationAirportOptions.first()).toBeVisible();
       const airportAvailableOptions = await this.destinationActiveAirportOptions.all();
-      const pickedAirport = airportAvailableOptions[Math.floor(Math.random() * airportAvailableOptions.length)]
+      const pickedAirport = pickRandom(airportAvailableOptions);
       await pickedAirport.click();
-
-
-
-      return 'succed';
+      placeholder = (await this.destinationField.getAttribute('placeholder') ?? '').trim();
+      expect(placeholder, "Can't find available airports").not.toBe('');
+      return placeholder;
     });
   }
 
@@ -177,10 +133,9 @@ export class SearchPanel {
   async selectRandomDepartureDate(): Promise<string> {
     return test.step('Select an random available departure date', async () => {
       await this.departureDateField.first().click();
-
-      await expect(this.departureDateField.first()).toBeVisible();
+      await expect(this.availableDateCells.first()).toBeVisible();
       const availableDates = await this.availableDateCells.all();
-      const pickedDate = availableDates[Math.floor(Math.random() * availableDates.length)];
+      const pickedDate = pickRandom(availableDates);
       await pickedDate.click();
       await this.datesSaveBtn.click();
       const dateLabel = (await this.departureDateField.getAttribute('value') ?? '').trim();
@@ -212,6 +167,7 @@ export class SearchPanel {
       `Set Rooms & Guests: rooms=${targetRooms}, adults=${targetAdults}, children=${targetChild}`,
       async () => {
         await this.roomsGuestsField.first().click();
+        await this.page.waitForTimeout(500);
 
         // Wait for the panel to be visible
         await expect(this.adultsSelect.first()).toBeVisible()
@@ -221,11 +177,13 @@ export class SearchPanel {
 
         // ── Rooms ──────────────────────────────────────────────────────────
         if (targetRooms !== 'default') {
-          await this.roomsSelect.first().selectOption({value: String(targetRooms)});
+          await this.roomsSelect.first().selectOption({ value: String(targetRooms) });
+          await this.page.waitForTimeout(200);
         }
 
         // ── Adults ─────────────────────────────────────────────────────────
         await this.adultsSelect.first().selectOption(String(targetAdults));
+        await this.page.waitForTimeout(200);
 
         // ── Children count ─────────────────────────────────────────────────
         if (targetChild > 0) {
@@ -256,7 +214,7 @@ export class SearchPanel {
               }
             }
             expect(validAges.length, `No valid age options for child ${i + 1}`).toBeGreaterThan(0);
-            chosenAge = validAges[Math.floor(Math.random() * validAges.length)];
+            chosenAge = pickRandom(validAges);
             await select.selectOption(chosenAge);
           }
 
@@ -267,9 +225,8 @@ export class SearchPanel {
           `✓ Rooms & Guests: rooms=${targetRooms}, adults=${targetAdults}, ` +
           `children=${targetChild} ages=[${chosenAges.join(', ')}]`
         );
-
         try {
-          await this.roomsGuestsApplyBtn.first().click({ timeout: 5_000 });
+          await this.roomsGuestsApplyBtn.first().click();
         } catch {
           await this.page.keyboard.press('Escape');
         }
@@ -280,12 +237,12 @@ export class SearchPanel {
 
   // ── Search submit ──────────────────────────────────────────────────────────
 
-  async submit(): Promise < void> {
-  await test.step('Submit the holiday search', async () => {
-    await this.searchBtn.first().click();
-    await this.page.waitForLoadState('domcontentloaded');
-    await expect(this.page).not.toHaveURL(/\/h\/nl$/, { timeout: 20_000 });
-    console.log(`✓ Search submitted → ${this.page.url()}`);
-  });
-}
+  async submit(): Promise<void> {
+    await test.step('Submit the holiday search', async () => {
+      await this.searchBtn.first().click();
+      await this.page.waitForLoadState('domcontentloaded');
+      await expect(this.page).not.toHaveURL(/\/h\/nl$/, { timeout: 20_000 });
+      console.log(`✓ Search submitted → ${this.page.url()}`);
+    });
+  }
 }
